@@ -3,6 +3,8 @@ project (urdfdom_headers)
 
 include(GNUInstallDirs)
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 set (URDF_MAJOR_VERSION 1)
 set (URDF_MINOR_VERSION 0)
 set (URDF_PATCH_VERSION 5)
@@ -30,6 +32,11 @@ else()
 endif()
 string(REGEX REPLACE "[^/]+" ".." RELATIVE_PATH_CMAKE_DIR_TO_PREFIX "${CMAKE_CONFIG_INSTALL_DIR}")
 
+include(JoinPaths)
+join_paths(cmake_conf_include_dirs
+  "\${${PROJECT_NAME}_DIR}/${RELATIVE_PATH_CMAKE_DIR_TO_PREFIX}"
+   "${CMAKE_INSTALL_INCLUDEDIR}")
+
 set(PACKAGE_NAME ${PROJECT_NAME})
 set(cmake_conf_file "${PROJECT_NAME}-config.cmake")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/${cmake_conf_file}.in" "${CMAKE_BINARY_DIR}/${cmake_conf_file}" @ONLY)
@@ -52,6 +59,7 @@ install(FILES
 if (NOT MSVC)
   set(PACKAGE_DESC "Unified Robot Description Format")
   set(pkg_conf_file "urdfdom_headers.pc")
+  join_paths(pkg_conf_includedir "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkgconfig/${pkg_conf_file}.in" "${CMAKE_BINARY_DIR}/${pkg_conf_file}" @ONLY)
   install(FILES "${CMAKE_BINARY_DIR}/${pkg_conf_file}" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ COMPONENT pkgconfig)
 endif()
